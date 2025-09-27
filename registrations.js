@@ -1,11 +1,10 @@
-// Fetch registrations and display them
 async function loadRegistrations() {
     try {
         const response = await fetch('/registrations');
         const data = await response.json();
 
         const tbody = document.querySelector('#registrationsTable tbody');
-        tbody.innerHTML = ""; // clear existing rows
+        tbody.innerHTML = "";
 
         if (data.length === 0) {
             tbody.innerHTML = "<tr><td colspan='4'>No registrations yet</td></tr>";

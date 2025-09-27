@@ -1,49 +1,39 @@
-// script.js
-const form = document.querySelector('form');
-const message = document.createElement('p');
-form.appendChild(message);
+const inputs = document.querySelectorAll('.input input');
+inputs.forEach(input => {
+  if (input.value.trim() !== '') input.classList.add('filled');
+  input.addEventListener('input', () => {
+    if (input.value.trim() !== '') input.classList.add('filled');
+    else input.classList.remove('filled');
+  });
+});
 
-form.addEventListener('submit', async (e) => {
+const form = document.getElementById('registrationForm');
+if(form){
+  form.addEventListener('submit', function(e){
     e.preventDefault();
-
     const fname = document.getElementById('fname').value.trim();
     const lname = document.getElementById('lname').value.trim();
     const email = document.getElementById('email').value.trim();
 
-    // Basic validation
-    if (!fname || !lname || !email) {
-        message.textContent = "Please fill all fields.";
-        message.style.color = "red";
-        return;
+    if(fname === "" || lname === "" || email === ""){
+      alert("Please fill all fields.");
+      return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        message.textContent = "Please enter a valid email.";
-        message.style.color = "red";
-        return;
-    }
+    const registrations = JSON.parse(localStorage.getItem('registrations') || "[]");
+    registrations.push({fname, lname, email});
+    localStorage.setItem('registrations', JSON.stringify(registrations));
 
-    // Send data to backend
-    try {
-        const response = await fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fname, lname, email })
-        });
+    window.location.href = "success.html";
+  });
+}
 
-        const data = await response.json();
-        if (data.success) {
-            message.textContent = "Registration successful!";
-            message.style.color = "green";
-            form.reset();
-        } else {
-            message.textContent = "Something went wrong.";
-            message.style.color = "red";
-        }
-    } catch (error) {
-        console.error(error);
-        message.textContent = "Error connecting to server.";
-        message.style.color = "red";
-    }
-});
+const tableBody = document.querySelector("#registrationsTable tbody");
+if(tableBody){
+  const registrations = JSON.parse(localStorage.getItem('registrations') || "[]");
+  registrations.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.fname}</td><td>${r.lname}</td><td>${r.email}</td>`;
+    tableBody.appendChild(tr);
+  });
+}
